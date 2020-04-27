@@ -371,7 +371,7 @@ class Bottleneck(nn.Module):
 
         if self.with_seb:
             out=self.context_block(out)
-        
+
         if self.downsample is not None:
             identity = self.downsample(x)
 

@@ -288,6 +288,12 @@ _C.MODEL.RESNETS.STAGE_WITH_DCN = (False, False, False, False)
 _C.MODEL.RESNETS.WITH_MODULATED_DCN = False
 _C.MODEL.RESNETS.DEFORMABLE_GROUPS = 1
 
+_C.MODEL.RESNETS.STAGE_WITH_GCB = (False, False, False, False)
+_C.MODEL.RESNETS.GCB_RATIO = 0.25
+
+_C.MODEL.RESNETS.STAGE_WITH_SEB = (False, False, False, False)
+_C.MODEL.RESNETS.SEB_RATIO = 0.0625
+
 
 # ---------------------------------------------------------------------------- #
 # RetinaNet Options (Follow the Detectron version)

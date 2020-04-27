@@ -170,3 +170,72 @@ def make_roi_box_post_processor(cfg):
         bbox_aug_enabled
     )
     return postprocessor
+
+
+def make_cascadercnn_roi_box_post_processor1(cfg):
+    use_fpn = cfg.MODEL.ROI_HEADS.USE_FPN
+
+    cascadercnn_bbox_reg_weights1 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BBOX_REG_WEIGHTS1
+    cascadercnn_box_coder1 = BoxCoder(weights=cascadercnn_bbox_reg_weights1)
+
+    score_thresh = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.SCORE_THRESH
+    cascadercnn_nms_thresh1 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.NMS1
+    detections_per_img = cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG
+    cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
+    bbox_aug_enabled = cfg.TEST.BBOX_AUG.ENABLED
+
+    postprocessor = PostProcessor(
+        score_thresh,
+        cascadercnn_nms_thresh1,
+        detections_per_img,
+        cascadercnn_box_coder1,
+        cls_agnostic_bbox_reg,
+        bbox_aug_enabled
+    )
+    return postprocessor
+
+
+def make_cascadercnn_roi_box_post_processor2(cfg):
+    use_fpn = cfg.MODEL.ROI_HEADS.USE_FPN
+
+    cascadercnn_bbox_reg_weights2 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BBOX_REG_WEIGHTS2
+    cascadercnn_box_coder2 = BoxCoder(weights=cascadercnn_bbox_reg_weights2)
+
+    score_thresh = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.SCORE_THRESH
+    cascadercnn_nms_thresh2 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.NMS2
+    detections_per_img = cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG
+    cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
+    bbox_aug_enabled = cfg.TEST.BBOX_AUG.ENABLED
+
+    postprocessor = PostProcessor(
+        score_thresh,
+        cascadercnn_nms_thresh2,
+        detections_per_img,
+        cascadercnn_box_coder2,
+        cls_agnostic_bbox_reg,
+        bbox_aug_enabled
+    )
+    return postprocessor
+
+
+def make_cascadercnn_roi_box_post_processor3(cfg):
+    use_fpn = cfg.MODEL.ROI_HEADS.USE_FPN
+
+    cascadercnn_bbox_reg_weights3 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BBOX_REG_WEIGHTS3
+    cascadercnn_box_coder3 = BoxCoder(weights=cascadercnn_bbox_reg_weights3)
+
+    score_thresh = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.SCORE_THRESH
+    cascadercnn_nms_thresh3 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.NMS3
+    detections_per_img = cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG
+    cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
+    bbox_aug_enabled = cfg.TEST.BBOX_AUG.ENABLED
+
+    postprocessor = PostProcessor(
+        score_thresh,
+        cascadercnn_nms_thresh3,
+        detections_per_img,
+        cascadercnn_box_coder3,
+        cls_agnostic_bbox_reg,
+        bbox_aug_enabled
+    )
+    return postprocessor

@@ -191,3 +191,81 @@ def make_roi_box_loss_evaluator(cfg):
     )
 
     return loss_evaluator
+
+
+def make_cascadercnn_roi_box_loss_evaluator1(cfg):
+    matcher1 = Matcher(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.FG_IOU_THRESHOLD1,
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BG_IOU_THRESHOLD1,
+        allow_low_quality_matches=False,
+    )
+
+    bbox_reg_weights1 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BBOX_REG_WEIGHTS1
+    box_coder1 = BoxCoder(weights=bbox_reg_weights1)
+
+    fg_bg_sampler1 = BalancedPositiveNegativeSampler(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BATCH_SIZE_PER_IMAGE, cfg.MODEL.CASCADE_RCNN_ROI_HEADS.POSITIVE_FRACTION
+    )
+
+    cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
+
+    loss_evaluator = FastRCNNLossComputation(
+        matcher1,
+        fg_bg_sampler1,
+        box_coder1,
+        cls_agnostic_bbox_reg
+    )
+
+    return loss_evaluator
+
+
+def make_cascadercnn_roi_box_loss_evaluator2(cfg):
+    matcher2 = Matcher(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.FG_IOU_THRESHOLD2,
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BG_IOU_THRESHOLD2,
+        allow_low_quality_matches=False,
+    )
+
+    bbox_reg_weights2 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BBOX_REG_WEIGHTS2
+    box_coder2 = BoxCoder(weights=bbox_reg_weights2)
+
+    fg_bg_sampler2 = BalancedPositiveNegativeSampler(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BATCH_SIZE_PER_IMAGE, cfg.MODEL.CASCADE_RCNN_ROI_HEADS.POSITIVE_FRACTION
+    )
+
+    cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
+
+    loss_evaluator = FastRCNNLossComputation(
+        matcher2,
+        fg_bg_sampler2,
+        box_coder2,
+        cls_agnostic_bbox_reg
+    )
+
+    return loss_evaluator
+
+
+def make_cascadercnn_roi_box_loss_evaluator3(cfg):
+    matcher3 = Matcher(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.FG_IOU_THRESHOLD3,
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BG_IOU_THRESHOLD3,
+        allow_low_quality_matches=False,
+    )
+
+    bbox_reg_weights3 = cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BBOX_REG_WEIGHTS3
+    box_coder3 = BoxCoder(weights=bbox_reg_weights3)
+
+    fg_bg_sampler3 = BalancedPositiveNegativeSampler(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BATCH_SIZE_PER_IMAGE, cfg.MODEL.CASCADE_RCNN_ROI_HEADS.POSITIVE_FRACTION
+    )
+
+    cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
+
+    loss_evaluator = FastRCNNLossComputation(
+        matcher3,
+        fg_bg_sampler3,
+        box_coder3,
+        cls_agnostic_bbox_reg
+    )
+
+    return loss_evaluator

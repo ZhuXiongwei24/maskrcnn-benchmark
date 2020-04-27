@@ -140,3 +140,45 @@ def make_roi_mask_loss_evaluator(cfg):
     )
 
     return loss_evaluator
+
+
+def make_cascadercnn_roi_mask_loss_evaluator1(cfg):
+    matcher1 = Matcher(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.FG_IOU_THRESHOLD1,
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BG_IOU_THRESHOLD1,
+        allow_low_quality_matches=False,
+    )
+
+    loss_evaluator1 = MaskRCNNLossComputation(
+        matcher1, cfg.MODEL.ROI_MASK_HEAD.RESOLUTION
+    )
+
+    return loss_evaluator1
+
+
+def make_cascadercnn_roi_mask_loss_evaluator2(cfg):
+    matcher2 = Matcher(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.FG_IOU_THRESHOLD2,
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BG_IOU_THRESHOLD2,
+        allow_low_quality_matches=False,
+    )
+
+    loss_evaluator2 = MaskRCNNLossComputation(
+        matcher2, cfg.MODEL.ROI_MASK_HEAD.RESOLUTION
+    )
+
+    return loss_evaluator2
+
+
+def make_cascadercnn_roi_mask_loss_evaluator3(cfg):
+    matcher3 = Matcher(
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.FG_IOU_THRESHOLD3,
+        cfg.MODEL.CASCADE_RCNN_ROI_HEADS.BG_IOU_THRESHOLD3,
+        allow_low_quality_matches=False,
+    )
+
+    loss_evaluator3 = MaskRCNNLossComputation(
+        matcher3, cfg.MODEL.ROI_MASK_HEAD.RESOLUTION
+    )
+
+    return loss_evaluator3

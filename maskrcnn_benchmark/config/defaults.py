@@ -460,7 +460,8 @@ _C.TEST.EXPECTED_RESULTS_SIGMA_TOL = 4
 _C.TEST.IMS_PER_BATCH = 8
 # Number of detections per image
 _C.TEST.DETECTIONS_PER_IMG = 100
-
+# Use Soft-NMS
+_C.USE_SOFT_NMS=False
 # ---------------------------------------------------------------------------- #
 # Test-time augmentations for bounding box detection
 # See configs/test_time_aug/e2e_mask_rcnn_R-50-FPN_1x.yaml for an example

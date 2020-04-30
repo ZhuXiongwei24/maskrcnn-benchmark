@@ -5,6 +5,9 @@ from .bounding_box import BoxList
 
 from maskrcnn_benchmark.layers import nms as _box_nms
 
+from soft_nms_cpu import soft_nms_cpu
+
+import numpy as np
 
 def boxlist_nms(boxlist, nms_thresh, max_proposals=-1, score_field="scores"):
     """
@@ -25,6 +28,34 @@ def boxlist_nms(boxlist, nms_thresh, max_proposals=-1, score_field="scores"):
     boxes = boxlist.bbox
     score = boxlist.get_field(score_field)
     keep = _box_nms(boxes, score, nms_thresh)
+    if max_proposals > 0:
+        keep = keep[: max_proposals]
+    boxlist = boxlist[keep]
+    return boxlist.convert(mode)
+
+
+def soft_nms(boxlist, nms_thresh, method='linear', sigma=0.5, min_score=0.001, max_proposals=-1,score_field="scores"):
+    """
+    Performs soft-non-maximum suppression on a boxlist, with scores specified
+    in a boxlist field via score_field.
+
+    Arguments:
+        boxlist(BoxList)
+        nms_thresh (float)
+        max_proposals (int): if > 0, then only the top max_proposals are kept
+            after non-maximum suppression
+        score_field (str)
+    """
+    if nms_thresh <= 0:
+        return boxlist
+    mode = boxlist.mode
+    boxlist = boxlist.convert("xyxy")
+    boxes = boxlist.bbox
+    score = boxlist.get_field(score_field)
+    dets=np.ascontiguousarray(boxes.detach().cpu().numpy(),dtype=np.float32)
+    scores=np.ascontiguousarray(score.detach().cpu().numpy(),dtype=np.float32)
+    method_code={'linear':1,'gaussian':2}
+    keep = soft_nms_cpu(dets,scores,np.float32(nms_thresh),np.uint8(method_code[method]),np.float32(sigma),np.float32(min_score))
     if max_proposals > 0:
         keep = keep[: max_proposals]
     boxlist = boxlist[keep]

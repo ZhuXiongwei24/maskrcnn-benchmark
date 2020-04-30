@@ -4,7 +4,7 @@ import torch.nn.functional as F
 from torch import nn
 
 from maskrcnn_benchmark.structures.bounding_box import BoxList
-from maskrcnn_benchmark.structures.boxlist_ops import boxlist_nms
+from maskrcnn_benchmark.structures.boxlist_ops import boxlist_nms, soft_nms
 from maskrcnn_benchmark.structures.boxlist_ops import cat_boxlist
 from maskrcnn_benchmark.modeling.box_coder import BoxCoder
 
@@ -23,7 +23,8 @@ class PostProcessor(nn.Module):
         detections_per_img=100,
         box_coder=None,
         cls_agnostic_bbox_reg=False,
-        bbox_aug_enabled=False
+        bbox_aug_enabled=False,
+        use_soft_nms=False
     ):
         """
         Arguments:
@@ -41,6 +42,7 @@ class PostProcessor(nn.Module):
         self.box_coder = box_coder
         self.cls_agnostic_bbox_reg = cls_agnostic_bbox_reg
         self.bbox_aug_enabled = bbox_aug_enabled
+        self.use_soft_nms=use_soft_nms
 
     def forward(self, x, boxes):
         """
@@ -125,9 +127,20 @@ class PostProcessor(nn.Module):
             boxes_j = boxes[inds, j * 4 : (j + 1) * 4]
             boxlist_for_class = BoxList(boxes_j, boxlist.size, mode="xyxy")
             boxlist_for_class.add_field("scores", scores_j)
-            boxlist_for_class = boxlist_nms(
-                boxlist_for_class, self.nms
-            )
+            if self.use_soft_nms:
+                boxlist_for_class=soft_nms(
+                    boxlist_for_class,
+                    self.nms,
+                    method='linear',
+                    sigma=0.5,
+                    min_score=0.001,
+                    max_proposals=-1,
+                    score_field='scores'
+                )
+            else:
+                boxlist_for_class = boxlist_nms(
+                    boxlist_for_class, self.nms
+                )
             num_labels = len(boxlist_for_class)
             boxlist_for_class.add_field(
                 "labels", torch.full((num_labels,), j, dtype=torch.int64, device=device)
@@ -183,14 +196,15 @@ def make_cascadercnn_roi_box_post_processor1(cfg):
     detections_per_img = cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG
     cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
     bbox_aug_enabled = cfg.TEST.BBOX_AUG.ENABLED
-
+    use_soft_nms=cfg.USE_SOFT_NMS
     postprocessor = PostProcessor(
         score_thresh,
         cascadercnn_nms_thresh1,
         detections_per_img,
         cascadercnn_box_coder1,
         cls_agnostic_bbox_reg,
-        bbox_aug_enabled
+        bbox_aug_enabled,
+        use_soft_nms
     )
     return postprocessor
 
@@ -206,14 +220,15 @@ def make_cascadercnn_roi_box_post_processor2(cfg):
     detections_per_img = cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG
     cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
     bbox_aug_enabled = cfg.TEST.BBOX_AUG.ENABLED
-
+    use_soft_nms = cfg.USE_SOFT_NMS
     postprocessor = PostProcessor(
         score_thresh,
         cascadercnn_nms_thresh2,
         detections_per_img,
         cascadercnn_box_coder2,
         cls_agnostic_bbox_reg,
-        bbox_aug_enabled
+        bbox_aug_enabled,
+        use_soft_nms
     )
     return postprocessor
 
@@ -229,13 +244,14 @@ def make_cascadercnn_roi_box_post_processor3(cfg):
     detections_per_img = cfg.MODEL.ROI_HEADS.DETECTIONS_PER_IMG
     cls_agnostic_bbox_reg = cfg.MODEL.CLS_AGNOSTIC_BBOX_REG
     bbox_aug_enabled = cfg.TEST.BBOX_AUG.ENABLED
-
+    use_soft_nms = cfg.USE_SOFT_NMS
     postprocessor = PostProcessor(
         score_thresh,
         cascadercnn_nms_thresh3,
         detections_per_img,
         cascadercnn_box_coder3,
         cls_agnostic_bbox_reg,
-        bbox_aug_enabled
+        bbox_aug_enabled,
+        use_soft_nms
     )
     return postprocessor

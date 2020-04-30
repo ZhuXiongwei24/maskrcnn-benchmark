@@ -42,6 +42,9 @@ def soft_nms(boxlist, nms_thresh, method='linear', sigma=0.5, min_score=0.001, m
     Arguments:
         boxlist(BoxList)
         nms_thresh (float)
+        method:linear soft nms or gaussian soft nms
+        sigma:the sigma value of gaussian soft nms
+        min_score:minimum threshold to delete the boxes
         max_proposals (int): if > 0, then only the top max_proposals are kept
             after non-maximum suppression
         score_field (str)

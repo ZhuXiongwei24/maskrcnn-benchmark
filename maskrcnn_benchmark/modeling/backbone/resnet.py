@@ -29,6 +29,7 @@ from maskrcnn_benchmark.modeling.make_layers import group_norm
 from maskrcnn_benchmark.utils.registry import Registry
 from maskrcnn_benchmark.layers.context_block import ContextBlock
 from maskrcnn_benchmark.layers.se_block import SEBlock
+from maskrcnn_benchmark.layers.nonlocal_block import NonLocalBlock
 
 # ResNet stage specification
 StageSpec = namedtuple(
@@ -111,6 +112,7 @@ class ResNet(nn.Module):
             stage_with_dcn = cfg.MODEL.RESNETS.STAGE_WITH_DCN[stage_spec.index -1]
             stage_with_gcb = cfg.MODEL.RESNETS.STAGE_WITH_GCB[stage_spec.index -1]
             stage_with_seb = cfg.MODEL.RESNETS.STAGE_WITH_SEB[stage_spec.index -1]
+            stage_with_nl = cfg.MODEL.RESNETS.STAGE_WITH_NL[stage_spec.index - 1]
             module = _make_stage(
                 transformation_module,
                 in_channels,
@@ -132,6 +134,10 @@ class ResNet(nn.Module):
                 seb_config={
                     "stage_with_seb": stage_with_seb,
                     "seb_ratio": cfg.MODEL.RESNETS.SEB_RATIO,
+                },
+                nl_config={
+                    "stage_with_nl":stage_with_nl,
+                    'nl_ratio':cfg.MODEL.RESNETS.NL_RATIO,
                 }
             )
             in_channels = out_channels
@@ -176,7 +182,8 @@ class ResNetHead(nn.Module):
         dilation=1,
         dcn_config={},
         gcb_config={},
-        seb_config={}
+        seb_config={},
+        nl_config={}
     ):
         super(ResNetHead, self).__init__()
 
@@ -206,7 +213,8 @@ class ResNetHead(nn.Module):
                 dilation=dilation,
                 dcn_config=dcn_config,
                 gcb_config=gcb_config,
-                seb_config=seb_config
+                seb_config=seb_config,
+                nl_config=nl_config
             )
             stride = None
             self.add_module(name, module)
@@ -231,7 +239,8 @@ def _make_stage(
     dilation=1,
     dcn_config={},
     gcb_config={},
-    seb_config={}
+    seb_config={},
+    nl_config={}
 ):
     blocks = []
     stride = first_stride
@@ -247,7 +256,8 @@ def _make_stage(
                 dilation=dilation,
                 dcn_config=dcn_config,
                 gcb_config=gcb_config,
-                seb_config=seb_config
+                seb_config=seb_config,
+                nl_config=nl_config
             )
         )
         stride = 1
@@ -268,7 +278,8 @@ class Bottleneck(nn.Module):
         norm_func,
         dcn_config,
         gcb_config,
-        seb_config
+        seb_config,
+        nl_config
     ):
         super(Bottleneck, self).__init__()
 
@@ -349,6 +360,11 @@ class Bottleneck(nn.Module):
             seb_ratio=seb_config.get("seb_ratio",0.0625)
             self.se_block=SEBlock(inplaces=out_channels,ratio=seb_ratio)
 
+        self.with_nl=nl_config.get("stage_with_nl",False)
+        if self.nl_config:
+            nl_ratio=nl_config.get("nl_ratio",0.5)
+            self.nl_block=NonLocalBlock(inplaces=out_channels,ratio=nl_ratio)
+
         for l in [self.conv1, self.conv3,]:
             nn.init.kaiming_uniform_(l.weight, a=1)
 
@@ -372,6 +388,8 @@ class Bottleneck(nn.Module):
         if self.with_seb:
             out=self.context_block(out)
 
+        if self.with_nl:
+            out=self.nl_block(out)
         if self.downsample is not None:
             identity = self.downsample(x)
 

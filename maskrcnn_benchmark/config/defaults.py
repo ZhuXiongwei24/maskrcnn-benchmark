@@ -294,6 +294,8 @@ _C.MODEL.RESNETS.GCB_RATIO = 0.25
 _C.MODEL.RESNETS.STAGE_WITH_SEB = (False, False, False, False)
 _C.MODEL.RESNETS.SEB_RATIO = 0.0625
 
+_C.MODEL.RESNETS.STAGE_WITH_NL = (False, False, False, False)
+_C.MODEL.RESNETS.NL_RATIO = 0.5
 
 # ---------------------------------------------------------------------------- #
 # RetinaNet Options (Follow the Detectron version)

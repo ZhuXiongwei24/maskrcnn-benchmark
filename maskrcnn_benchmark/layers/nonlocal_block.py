@@ -78,10 +78,3 @@ class NonLocalBlock(nn.Module):
         output=x+self.conv_phi(y)
 
         return output
-
-
-
-
-
-
-
